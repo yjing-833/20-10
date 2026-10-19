@@ -320,7 +320,7 @@ class FlowerController {
       // Tự động kích hoạt ẩn hoa sau 1 giây (1000ms) khi đã nở đầy
       setTimeout(() => {
         this.hideFlowers();
-      }, 1000);
+      }, 800);
     });
 
     this.initUIEvents();
