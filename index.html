@@ -131,24 +131,70 @@
     }
 
     /* Hints & Text Overlay */
-    .s1-intro-hint, .s1-tap-hint {
-      position: absolute;
-      bottom: 12%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      text-align: center;
-      pointer-events: none;
+    
+.s1-intro-hint,
+.s1-tap-hint {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 12px;
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+}
+
+.intro-hint-text,
+.tap-hint-text {
+    display: inline-block;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1rem, 5vw, 2rem);
+    font-weight: normal;
+    line-height: 1.4;
+    color: #fff;
+
+    text-shadow:
+        0 0 10px #ff3366,
+        0 0 20px #ff3366;
+
+    letter-spacing: 1px;
+    overflow-wrap: break-word;
+    animation: fadeInOut 2s infinite ease-in-out;
+}
+
+/* Chỉ áp dụng trên điện thoại */
+@media screen and (max-width: 767px) {
+    .s1-intro-hint,
+    .s1-tap-hint {
+        bottom: 10%;
+        padding: 0 16px;
     }
 
-    .intro-hint-text, .tap-hint-text {
-      font-family: 'Dancing Script', cursive;
-      font-size: 2rem;
-      color: #fff;
-      text-shadow: 0 0 10px #ff3366, 0 0 20px #ff3366;
-      letter-spacing: 1px;
-      animation: fadeInOut 2s infinite ease-in-out;
+    .intro-hint-text,
+    .tap-hint-text {
+        font-size: clamp(16px, 5vw, 22px);
+        letter-spacing: 0.5px;
+        line-height: 1.5;
+        text-shadow:
+            0 0 6px #ff3366,
+            0 0 12px #ff3366;
     }
+}
+
+/* Điện thoại màn hình nhỏ */
+@media screen and (max-width: 360px) {
+    .intro-hint-text,
+    .tap-hint-text {
+        font-size: 16px;
+        letter-spacing: 0;
+    }
+}
+
 
     @keyframes fadeInOut {
       0%, 100% { opacity: 1.4; }
@@ -421,6 +467,43 @@
         }
         #text .chu-20-10 { display: block; }
         #text .chu-20-10:last-child { margin-top: .08em; }
+        /* CSS riêng cho điện thoại */
+@media screen and (max-width: 767px) {
+    #text {
+        position: absolute;
+        top: 7%;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 14px;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: clamp(15px, 4.8vw, 19px);
+        font-weight: 500;
+        line-height: 1.5;
+        letter-spacing: 0.5px;
+
+        color: #ffb6c1;
+        text-align: center;
+        overflow-wrap: break-word;
+        word-break: normal;
+        white-space: normal;
+
+        text-shadow:
+            0 0 5px rgba(255, 105, 180, 0.9),
+            0 0 12px rgba(255, 105, 180, 0.5);
+    }
+
+    #text .chu-20-10 {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #text .chu-20-10 + .chu-20-10 {
+        margin-top: 12px;
+    }
+}
         #vang-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
