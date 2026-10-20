@@ -18,6 +18,8 @@
             rel="stylesheet"
         />
 
+        <script src="effects.js"></script>
+
         <!-- Core Libraries: Three.js r128, OrbitControls, GSAP, Canvas-Confetti -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -70,6 +72,13 @@
                 padding: 0;
                 user-select: none;
             }
+            html,
+body {
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
 
             body {
                 background-color: #000000;
@@ -705,11 +714,384 @@
                     transition: opacity 0.3s ease;
                 }
             }
+            .opening {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 43%, #fffaf3 0%, #f5efe6 63%, #eee5da 100%);
+  transition: opacity 4s ease-in-out;
+}
+
+.opening.transparent {opacity: 0;
+}
+
+.open-button {
+  border: 1px solid #765a50;
+  border-radius: 100px;
+  background: #634b42;
+  color: #fffaf5;
+  padding: 14px 29px;
+  min-height: 52px;
+  font-size: 17px;
+  cursor: pointer;
+  box-shadow: 0 9px 22px rgba(75, 53, 43, 0.12);
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 10;
+}
+
+.open-button:hover {
+  background: #76584d;
+  transform: translateY(-2px);
+}
+
+.opening.is-open .open-button {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* PHONG BÌ */
+.envelope-scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(68vw, 255px);
+  height: 158px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 3;
+}
+
+.opening.is-open .envelope-scene {
+  opacity: 1;
+}
+
+.envelope {
+  position: absolute;
+  inset: 0;
+  filter: drop-shadow(0 13px 12px rgba(93, 68, 55, 0.16));
+}
+
+.envelope-back {
+  position: absolute;
+  inset: 0;
+  background: #dac0ac;
+  border-radius: 3px;
+}
+
+.envelope-pocket {
+  position: absolute;
+  inset: 0;
+  z-index: 3; /* Mặt trước túi phong bì nằm ở z-index: 3 */
+  background: #ead5c3;
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 88px;
+  z-index: 4;
+  transform-origin: top center;
+  background: #e3cbb7;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transition: transform 0.4s cubic-bezier(0.23, 0.7, 0.25, 1);
+}
+
+.opening.is-open .envelope-flap {
+  transform: rotateX(180deg);
+  z-index: 0;
+}
+
+/* THƯ PHÚT ĐẦU BẮN RA TỪ PHONG BÌ (GIAO ĐOẠN BAY LÊN) */
+.envelope-sheet {
+  position: absolute;
+  width: 78%;
+  height: 100px;
+  bottom: 8px;
+  left: 11%;
+  background: #fffcf7;
+  border: 1px solid #e8dbcf;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(70, 50, 40, 0.12);
+  z-index: 2; /* Nằm dưới túi phong bì (z-index: 3) */
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0;
+}
+
+.envelope-sheet.shoot-out {
+  z-index: 2; /* Đảm bảo khi bay lên vẫn giữ z-index: 2 để luôn ở phía sau mặt túi phong bì */
+  animation: shootUpAndOut 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes shootUpAndOut {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-30px) scale(0.95) rotate(calc(var(--rot) * 0.3));
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--shootX), -120vh) scale(1.15) rotate(var(--rot));
+  }
+}
+
+/* TRẬN MƯA THƯ RƠI PHỦ KÍN MÀN HÌNH (GIAO ĐOẠN RƠI XUỐNG) */
+#rain-sheets-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999; /* z-index cao giúp các lá thư khi rơi xuống sẽ nằm ĐÈ TRÊN phong bì */
+  overflow: hidden;
+}
+
+.falling-sheet {
+  position: absolute;
+  width: 280px;
+  height: 120px;
+  background: #fffcf7;
+  border: 1px solid #e8dbcf;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(70, 50, 40, 0.18);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #59483f;
+  opacity: 0;
+  animation: dropIn var(--duration) cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transition: opacity 3s ease-in-out;
+}
+
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-120vh) rotate(var(--rotStart));
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--rotEnd));
+  }
+}
+
+.falling-sheet.fade-out {
+  animation: fadeOutSheet 1s ease-in-out forwards !important;
+}
+
+@keyframes fadeOutSheet {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--rotEnd));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0) rotate(var(--rotEnd));
+  }
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 600px) {
+  .falling-sheet {
+    width: 160px;
+    height: 90px;
+    padding: 8px;
+    font-size: 12px;
+    line-height: 1.35;
+    border-radius: 6px;
+  }
+}
+/* Khung chứa hiệu ứng nền toàn màn hình */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Hiệu ứng các đám mây/quầng sáng mờ (thẻ <i>) */
+.ambient > i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  width: 55vmax;
+  height: 55vmax;
+  opacity: 0.26;
+  animation: cloud-drift 18s ease-in-out infinite alternate;
+}
+
+.ambient > i:nth-child(1) {
+  top: -25vmax;
+  right: -15vmax;
+  background: #f5b7d1;
+}
+
+.ambient > i:nth-child(2) {
+  bottom: -25vmax;
+  left: -23vmax;
+  background: #edcbdc;
+  animation-delay: -8s;
+}
+
+.ambient > i:nth-child(3) {
+  left: 50%;
+  top: 25%;
+  height: 25vmax;
+  width: 25vmax;
+  background: #fffef3;
+  opacity: 0.7;
+  animation-delay: -14s;
+}
+
+/* Hiệu ứng các ngôi sao/biểu tượng bay lơ lửng (thẻ <span class="ambient-star">) */
+.ambient-star {
+  position: absolute;
+  color: #cc879d;
+  opacity: 0.44;
+  animation: float-gentle 7s ease-in-out infinite;
+  font-family: Georgia, serif;
+}
+
+.a1 {
+  left: 10%;
+  top: 20%;
+  font-size: 24px;
+}
+
+.a2 {
+  right: 14%;
+  top: 38%;
+  font-size: 14px;
+  animation-delay: -2s;
+}
+
+.a3 {
+  left: 7%;
+  top: 68%;
+  font-size: 34px;
+  transform: rotate(-18deg);
+}
+
+.a4 {
+  right: 8%;
+  bottom: 12%;
+  font-size: 30px;
+  animation-delay: -5s;
+}
+
+.a5 {
+  left: 55%;
+  top: 12%;
+  font-size: 13px;
+  opacity: 0.25;
+}
+
+/* Keyframes cho chuyển động trôi đám mây và nhấp nhô nhẹ */
+@keyframes cloud-drift {
+  to {
+    transform: translate(10%, 12%) scale(1.13);
+  }
+}
+
+@keyframes float-gentle {
+  50% {
+    translate: 0 -10px;
+    rotate: 3deg;
+  }
+}
+
+/* Biến đổi họa tiết nền theo ngữ cảnh trang (nếu có sử dụng data-scene) */
+body[data-scene="wishes"] .ambient > i {
+  opacity: 0.1;
+}
+
+body[data-scene="profile"] .ambient {
+  background-image: linear-gradient(90deg, #fff0 0 49.7%, #e6b9cb20 50%, #fff0 50.3%);
+  background-size: 42px 42px;
+}
+
+body[data-scene="quiz"] .ambient {
+  background-image: radial-gradient(ellipse at 80% 30%, #fff0dc99, transparent 45%);
+}
+
+body[data-scene="puzzle"] .ambient {
+  background-image: radial-gradient(#b9869d16 0.8px, transparent 1px);
+  background-size: 17px 17px;
+}
+
+body[data-scene="letter"] .ambient {
+  background-image: repeating-linear-gradient(0deg, transparent 0 38px, #ddbeca10 38px 39px);
+}
+
+body[data-scene="ending"] .ambient:after {
+  content: "♡";
+  position: absolute;
+  left: 50%;
+  top: 35%;
+  translate: -50% -50%;
+  font: 400 85vw Georgia, serif;
+  color: #f0c4d133;
+  animation: ending-bg-heart 12s ease-in-out infinite alternate;
+}
+
+@keyframes ending-bg-heart {
+  to {
+    scale: 1.05;
+    rotate: 4deg;
+  }
+}
+
+/* Tối ưu khi thiết bị bật chế độ giảm chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  .ambient > i {
+    filter: blur(20px);
+  }
+}
+.text-layer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.chu-20-10 {
+    display: block;
+    text-align: center;
+}
+
+.decode-char {
+    display: inline-block;
+    white-space: pre;
+    will-change: transform, opacity;
+}
         </style>
     </head>
     <body>
         <div id="tiny-sky"></div>
         <div id="lower-stars"></div>
+
 
         <!-- Audio Element (Phục vụ phát nhạc nền MP3) -->
         <audio id="bgAudio" loop preload="auto"></audio>
@@ -719,21 +1101,27 @@
         <canvas id="flowerCanvas"></canvas>
 
         <!-- Container Phân cảnh chính (Scene 1) -->
-        <div id="scene1" class="scene active">
-            <!-- Món quà/Biểu tượng chạm ban đầu -->
-            <div id="s1IntroObject" class="intro-object">
-                <div class="rose-icon-btn">🌹</div>
-            </div>
+        
+  <div class="opening">
+    <div class="ambient" aria-hidden="true"><i></i><i></i><i></i><span class="ambient-star a1">✧</span><span class="ambient-star a2">✦</span><span class="ambient-star a3">♡</span><span class="ambient-star a4">✧</span><span class="ambient-star a5">♡</span></div> 
+    <button id="open-letter-button" class="open-button" type="button">Mở lá thư này nhé</button>
 
-            <!-- Hướng dẫn chạm ban đầu -->
-            <div id="s1TapHint" class="s1-intro-hint">
-                <span class="intro-hint-text">✨ Chạm để mở quà 20/10 ✨</span>
-            </div>
-        </div>
+    <div class="envelope-scene" aria-hidden="true">
+      <div class="envelope">
+        <div class="envelope-back"></div>
+        <div id="envelope-sheets-container"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-pocket"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container chứa mưa thư phủ kín màn hình -->
+  <div id="rain-sheets-container"></div>
         <div id="text" class="text-layer">
-            <span class="chu-20-10">Chào mừng ngày Phụ nữ Việt Nam 20/10 💐</span
+            <span class="chu-20-10">Chào mừng ngày Phụ nữ Việt Nam <br/>20/10 💐</span
             ><span class="chu-20-10"
-                >Chúc tất cả những "bông hoa" 🌹 <br />ngày càng rạng rỡ xinh đẹp, hãy nở rộ thật đẹp theo ý bạn muốn
+                >Chúc tất cả những "bông hoa" 🌹 <br/>ngày càng rạng rỡ xinh đẹp, hãy nở rộ thật đẹp theo ý bạn muốn
                 💖</span
             >
         </div>
@@ -748,6 +1136,58 @@
         <script src="main.js"></script>
         <script src="maintwo.js"></script>
         <script>
+const textLayer = document.getElementById('text');
+
+let originalHTML = '';
+
+function buildLetters() {
+    if (!textLayer || textLayer.dataset.built) return;
+
+    originalHTML = textLayer.innerHTML;
+    textLayer.dataset.built = 'true';
+
+    // Giữ nguyên cấu trúc hai đoạn và các thẻ <br>
+    textLayer.querySelectorAll('.chu-20-10').forEach(span => {
+        const walker = document.createTreeWalker(
+            span,
+            NodeFilter.SHOW_TEXT
+        );
+
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+
+        nodes.forEach(node => {
+            const fragment = document.createDocumentFragment();
+
+            for (const char of node.textContent) {
+                if (char === '\n' || char === '\r') {
+                    fragment.appendChild(document.createTextNode(char));
+                    continue;
+                }
+
+                const letter = document.createElement('span');
+                letter.className = 'decode-char';
+                letter.textContent = char === ' ' ? '\u00a0' : char;
+
+                const dx = (Math.random() - 0.5) *
+                    Math.min(window.innerWidth * 0.7, 480);
+                const dy = (Math.random() - 0.5) * 180;
+                const rot = (Math.random() - 0.5) * 150;
+
+                letter.style.opacity = '0.5';
+                letter.style.transform =
+                    `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+
+                fragment.appendChild(letter);
+            }
+
+            node.replaceWith(fragment);
+        });
+    });
+}
+buildLetters();
+            window.FX.init();
+
             // Các ngôi sao nhấp nháy và sao băng bay lặp lại trên nền trời.
             (() => {
                 const sky = document.getElementById("tiny-sky");
