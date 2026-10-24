@@ -8,26 +8,26 @@
 
   if (!button || !opening || !envelopeContainer || !rainContainer) return;
 
-const messages = [
-  "🌸 Chúc bạn 20/10 vui vẻ, luôn xinh đẹp, tự tin và gặp nhiều may mắn nhé! 💖",
+  const messages = [
+  "🌸 Chúc bạn luôn xinh đẹp, tự tin và gặp nhiều may mắn nhé! 💖",
   "🌷 Chúc bạn luôn rạng rỡ, công việc thuận lợi và tràn đầy năng lượng tích cực! ✨",
-  "💐 Chúc bạn 20/10 ngập tràn niềm vui, nhiều hoa, nhiều quà và thật hạnh phúc! 🥰",
+  "💐 Chúc bạn luôn ngập tràn niềm vui, nhận được nhiều yêu thương và thật hạnh phúc! 🥰",
   "🌻 Chúc bạn luôn vui tươi, yêu đời và thành công trên con đường mình chọn! 💕",
   "🎀 Chúc bạn ngày càng xinh đẹp, bản lĩnh và gặp nhiều điều tốt đẹp! 🌸",
   "🩷 Chúc bạn luôn được yêu thương, trân trọng và mọi cố gắng đều được đền đáp! 🌷",
-  "🌹 Chúc bạn 20/10 vui vẻ, tiền bạc rủng rỉnh, công việc hanh thông! 🍀",
+  "🌹 Chúc bạn luôn vui vẻ, tiền bạc rủng rỉnh, công việc hanh thông! 🍀",
   "🦋 Chúc bạn luôn tự tin, bình an và có một tuổi trẻ thật rực rỡ! 💐",
   "🌺 Chúc bạn luôn xinh tươi, may mắn và mọi chuyện đều thuận lợi! 💝",
   "✨ Chúc bạn luôn lạc quan, gặp nhiều cơ hội tốt và sớm đạt mục tiêu! 🌷",
   "💖 Chúc bạn mạnh khỏe, vui vẻ và luôn có những người bạn tốt bên cạnh! 🌸",
-  "🌼 Chúc bạn 20/10 thật trọn vẹn, nhận quà xinh và nhiều niềm vui! 🎁",
+  "🌼 Chúc bạn mỗi ngày đều trọn vẹn niềm vui, nhận được nhiều yêu thương và những bất ngờ đáng yêu! 🎁",
   "🥳 Chúc bạn ngày càng xinh đẹp, thành công và giàu có nhé! 💐",
   "🌈 Chúc bạn luôn mạnh mẽ, kiên trì và gặp nhiều điều may mắn! 💕",
   "🌹 Chúc bạn luôn vui vẻ, công việc như ý và cuộc sống ngập tràn tiếng cười! 🥰",
   "🎉 Chúc bạn ngày càng trưởng thành, thành công và luôn yêu đời! 💗",
   "🌷 Chúc bạn luôn tươi trẻ, mọi việc suôn sẻ và gặp nhiều may mắn! 🍀",
   "🩷 Chúc bạn luôn tự tin, tỏa sáng và hạnh phúc theo cách riêng! 🦋",
-  "💐 Chúc bạn 20/10 ấm áp, nhiều tiếng cười và thật nhiều hạnh phúc! 🌸",
+  "💐 Chúc bạn luôn ấm áp, ngập tràn tiếng cười và có thật nhiều khoảnh khắc hạnh phúc! 🌸",
   "🌻 Chúc bạn luôn xinh đẹp, độc lập và sớm đạt được ước mơ! ✨",
   "🎀 Chúc bạn gặp nhiều cơ hội tốt, công việc thuận lợi và thành công! 💖",
   "🌺 Chúc bạn mỗi ngày đều vui vẻ, bình an và có nhiều điều đáng nhớ! 🥰",
